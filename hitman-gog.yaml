@@ -1,0 +1,40 @@
+---
+name: "Hitman: Codename 47"
+game_slug: hitman
+slug: hitman-gog
+gogslug: hitman
+gogid: 1207658996
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - execute:
+        file: innoextract
+        args: --gog --exclude-temp --progress --silent -d $GAMEDIR $setup
+        description: Extracting game data...
+    - task:
+        # Setup a Wine virtual desktop because
+        # the game requires a 16bit color display
+        name: set_regedit
+        path: HKEY_CURRENT_USER\SOFTWARE\Wine\Explorer
+        key: Desktops
+        value: 1024x768
+        type: REG_SZ
+        prefix: $GAMEDIR
+        arch: win32
+    - task:
+        name: winetricks
+        app: d3dx10_43
+        prefix: $GAMEDIR
+        arch: win32
+  game:
+    exe: $GAMEDIR/app/hitman.exe
+    prefix: "$GAMEDIR"
+    arch: win32
+  wine:
+    Desktop: true
+    WineDesktop: 1024x768
