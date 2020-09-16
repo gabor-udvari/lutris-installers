@@ -4,6 +4,7 @@ The Lutris installers in this repository meet the following requirements:
 
 - GOG.com games only, [FCKDRM](https://www.fckdrm.com/)
 - The installer is running natively
+- The YAML files are validated with [yamllint](https://github.com/adrienverge/yamllint)
 
 ## Innoextract
 
