@@ -2,7 +2,6 @@
 name: "Hitman: Codename 47"
 game_slug: hitman
 slug: hitman-gog
-gogslug: hitman
 gogid: 1207658996
 runner: wine
 version: GOG

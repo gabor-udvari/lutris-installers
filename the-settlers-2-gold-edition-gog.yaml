@@ -2,7 +2,6 @@
 name: "The Settlers 2: Gold Edition"
 game_slug: the_settlers_2_gold_edition
 slug: the_settlers_2_gold_edition
-gogslug: the_settlers_2_gold_edition
 gogid: 1207658786
 runner: dosbox
 version: GOG
