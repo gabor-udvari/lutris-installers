@@ -1,0 +1,98 @@
+---
+name: Colin McRae Rally 2005
+game_slug: colin_mcrae_rally_2005
+slug: colin-mcrae-rally-2005-gog
+gogid: 1207658663
+runner: wine
+version: GOG
+
+# TODO: The videos cannot be played, even when
+# gstreamer-plugins-ugly:i386 is installed:
+#
+# no suitable plugins found:
+# Missing decoder: Windows Media Video 8 Screen (video/x-wmv, wmvve
+# rsion=(int)2, width=(int)640, height=(int)480, codec_data=(buffe$
+# )cfffad00, format=(string)WMV2)
+# Missing decoder: Windows Media Audio 8 (audio/x-wma, wmaversion=(
+# int)2, bitrate=(int)192016, depth=(int)16, rate=(int)44100, chann
+# els=(int)2, block_align=(int)8917, codec_data=(buffer)009000000f0
+# 0d5220000)
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: N/A:Select the Windows installer provided by GOG
+  installer:
+    - execute:
+        file: innoextract
+        args: --gog --exclude-temp --progress --silent -d $GAMEDIR $setup
+        description: Extracting game data...
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: INSTALL_PATH
+        value: $GAMEDIR/app
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: CD_PATH
+        value: $GAMEDIR/app
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: AUDIO_PATH
+        value: $GAMEDIR/app
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: VIDEO_PATH
+        value: $GAMEDIR/app
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: HDCACHE_PATH
+        value: $GAMEDIR/app/HD
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: SAVEGAME_PATH
+        value: $GAMEDIR/app/SG
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: SELECTION
+        value: CXBVJXLVOVDWBXBXQIQIQIQIQIQIQIQI
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\SOFTWARE\Codemasters\Colin McRae Rally 2005
+        key: CD_KEY
+        value: ''
+        type: REG_SZ
+        arch: win32
+  game:
+    exe: "$GAMEDIR/app/cmr5.exe"
+    args: widescreendisplay forceht
+    prefix: "$GAMEDIR"
+    arch: win32
