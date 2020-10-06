@@ -1,0 +1,29 @@
+---
+name: "Spec Ops: The Line"
+game_slug: spec_ops_the_line
+slug: spec-ops-the-line
+gogid: 1710761915
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - task:
+        name: create_prefix
+        arch: win64
+    - execute:
+        file: innoextract
+        # Args need the default-language flag because without it
+        # the spanish language would be installed and cannot be
+        # changed after installation
+        args: >
+          --gog --exclude-temp --progress --silent
+          --default-language 'en-US' -d "$GAMEDIR/Game" "$setup"
+        description: Extracting game data...
+  game:
+    exe: $GAMEDIR/Game/Binaries/Win32/SpecOpsTheLine.exe
+    prefix: "$GAMEDIR"
+    arch: win64
