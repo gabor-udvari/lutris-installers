@@ -1,0 +1,20 @@
+---
+name: "Children of Morta"
+game_slug: children_of_morta
+slug: children-of-morta-gog
+gogid: 1774901766
+runner: linux
+version: GOG
+
+script:
+  files:
+    - setup: "N/A: Select the Linux installer provided by GOG"
+
+  installer:
+    # Extract with zip instead of Mojo Installer
+    - extract:
+        file: $setup
+        format: 'zip'
+        dst: $GAMEDIR
+  game:
+    exe: $GAMEDIR/data/noarch/start.sh
