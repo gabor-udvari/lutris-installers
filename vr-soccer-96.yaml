@@ -1,0 +1,30 @@
+---
+name: "VR Soccer '96"
+game_slug: vr_soccer_96
+slug: vr_soccer_96
+gogid: 1207658783
+runner: dosbox
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - execute:
+        file: innoextract
+        args: --gog --exclude-temp --progress --silent -d $GAMEDIR $setup
+        description: Extracting game data...
+    - merge:
+        src: $GAMEDIR/__support/app
+        dst: $GAMEDIR/app
+    - execute:
+        # Update dosbox config for Unix-like path separators
+        command: >
+          sed -i 's#\\VRSOCCER\.ins#/VRSOCCER.ins#'
+          "$GAMEDIR/app/dosboxVR99_single.conf"
+
+  game:
+    # VR99 is not a typo, the dosbox installer comes with these
+    config_file: $GAMEDIR/app/dosboxVR99.conf
+    main_file: $GAMEDIR/app/dosboxVR99_single.conf
