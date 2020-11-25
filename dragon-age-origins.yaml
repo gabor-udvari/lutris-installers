@@ -1,0 +1,32 @@
+---
+name: "Dragon Age: Origins"
+game_slug: dragon_age_origins
+slug: dragon_age_origins
+gogid: 1949616134
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - task:
+        name: create_prefix
+        arch: win64
+    - execute:
+        file: innoextract
+        args: >
+          --gog --exclude-temp --progress --silent
+          -d "$GAMEDIR/Game" "$setup"
+        description: Extracting game data...
+    - task:
+        name: winetricks
+        app: physx
+        prefix: $GAMEDIR
+        arch: win64
+
+  game:
+    exe: $GAMEDIR/Game/game/DAOriginsLauncher.exe
+    prefix: "$GAMEDIR"
+    arch: win64
