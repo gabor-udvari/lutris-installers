@@ -1,0 +1,64 @@
+---
+name: "The Witcher"
+game_slug: the_witcher
+slug: the_witcher
+gogid: 1207658924
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - task:
+        # 32 bit is required
+        name: create_prefix
+        arch: win32
+
+    - execute:
+        # Extract into drive_c, so that regedit is easier later
+        file: innoextract
+        args: >
+          --gog --exclude-temp --progress --silent
+          -d "$GAMEDIR/drive_c/Game" "$setup"
+        description: Extracting game data...
+
+    # The game will not start without HKLM/Software/CD Project Red
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\Software\CD Projekt Red\The Witcher
+        key: InstallFolder
+        value: 'C:\\Game\\app'
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\Software\CD Projekt Red\The Witcher
+        key: IsDjinniInstalled
+        value: '00000001'
+        type: REG_DWORD
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\Software\CD Projekt Red\The Witcher
+        key: Language
+        value: 3
+        type: REG_SZ
+        arch: win32
+    - task:
+        name: set_regedit
+        prefix: $GAMEDIR
+        path: HKEY_LOCAL_MACHINE\Software\CD Projekt Red\The Witcher
+        key: RegionVersion
+        value: WE
+        type: REG_SZ
+        arch: win32
+
+  game:
+    exe: $GAMEDIR/drive_c/Game/app/launcher.exe
+    prefix: "$GAMEDIR"
+    arch: win32
