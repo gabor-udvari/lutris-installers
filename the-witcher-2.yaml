@@ -1,0 +1,94 @@
+---
+name: "The Witcher 2"
+game_slug: the_witcher_2
+slug: the_witcher_2
+gogid: 1207658930
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - task:
+        # Win32 is required for dotnet40
+        name: create_prefix
+        arch: win32
+        install_gecko: false
+        install_mono: false
+
+    - execute:
+        # Extract into a folder inside the prefix but outside of drive_c
+        file: innoextract
+        args: >
+          --gog --exclude-temp --include app --progress --silent
+          -d "$GAMEDIR/Game" "$setup"
+        description: Extracting game data...
+
+    - execute:
+        # Make the Game folder a separate d: drive for Wine,
+        # so that the Wine prefix is easy to replace
+        file: ln
+        args: "-s ../Game dosdevices/d:"
+
+    - task:
+        # The vcrun2010 and cmd.exe steps require this
+        description: Updating the Wine prefix
+        name: wineexec
+        executable: 'c:\windows\system32\wineboot.exe'
+        args: -u
+
+    - task:
+        description: Installing Visual C Runtime
+        name: winetricks
+        app: vcrun2010
+
+    - task:
+        description: Installing d3dcompiler
+        name: winetricks
+        app: d3dcompiler_47
+
+    # The game will not start without HKLM/Software/CD Project Red
+    - task:
+        name: set_regedit
+        path:
+          HKEY_LOCAL_MACHINE\Software\CD Projekt RED\The Witcher 2
+        key: InstallFolder
+        value: 'd:\\app'
+        type: REG_SZ
+    - task:
+        name: set_regedit
+        path:
+          HKEY_LOCAL_MACHINE\Software\CD Projekt RED\The Witcher 2
+        key: Language
+        value: EN
+        type: REG_SZ
+    - task:
+        name: set_regedit
+        path:
+          HKEY_LOCAL_MACHINE\Software\CD Projekt RED\The Witcher 2
+        key: Release
+        value: GOG
+        type: REG_SZ
+
+    - write_file:
+        # Write a batch file which gets the MyDocuments folder path,
+        # and copies the initial config files to it
+        # Reg part taken from: https://stackoverflow.com/a/18565533
+        file: $GAMEDIR/drive_c/copy_config.bat
+        content: "@ECHO OFF\r\n
+          FOR /F \"tokens=2* delims= \" %%A IN ('reg query \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\" /v \"Personal\"') DO (set mydocuments=%%B)\r\n
+          xcopy \"d:\\app\\bin\\config\" ^\r\n
+          \"%mydocuments%\\Witcher 2\\Config\" /E /I /Y"
+
+    - task:
+        # The initial config files are required for Launcher.exe
+        description: Copy the initial config files
+        name: wineexec
+        executable: 'c:\copy_config.bat'
+
+  game:
+    exe: $GAMEDIR/Game/app/Launcher.exe
+    prefix: "$GAMEDIR"
+    arch: win32
