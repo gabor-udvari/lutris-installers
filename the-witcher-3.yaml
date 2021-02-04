@@ -1,0 +1,37 @@
+---
+name: "The Witcher 3"
+game_slug: the_witcher_3
+slug: the_witcher_3
+gogid: 1495134320
+runner: wine
+version: GOG
+
+script:
+  require-binaries: innoextract
+  files:
+    - setup: "N/A: Select the Windows installer provided by GOG"
+  installer:
+    - task:
+        name: create_prefix
+        arch: win64
+        install_gecko: false
+        install_mono: false
+
+    - execute:
+        # Extract into a folder inside the prefix but outside of drive_c
+        file: innoextract
+        args: >
+          --gog --exclude-temp --include app --progress --silent
+          -d "$GAMEDIR/Game" "$setup"
+        description: Extracting game data...
+
+    - execute:
+        # Make the Game folder a separate d: drive for Wine,
+        # so that the Wine prefix is easy to replace
+        file: ln
+        args: "-s ../Game dosdevices/d:"
+
+  game:
+    exe: $GAMEDIR/Game/app/bin/x64/witcher3.exe
+    prefix: "$GAMEDIR"
+    arch: win64
